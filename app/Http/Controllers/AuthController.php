@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -61,6 +60,7 @@ class AuthController extends Controller
 			'user' => $user,
 			'code' => $code
 		], $code);
+		
 	}
 
 
@@ -142,5 +142,48 @@ public function show($id, Request $request)
 			'token_type' => 'Bearer',
 			'code' => $code
 		], $code);
+	}
+
+	/**
+	 * @OA\Get(
+	 *     path="/api/me",
+	 *     tags={"Authentication"},
+	 *     summary="Get authenticated user",
+	 *     description="Get the currently authenticated user information",
+	 *     security={{"sanctum":{}}},
+	 *     @OA\Response(
+	 *         response=200,
+	 *         description="User information retrieved successfully",
+	 *         @OA\JsonContent(
+	 *             @OA\Property(property="message", type="string", example="Authenticated user retrieved successfully"),
+	 *             @OA\Property(property="user", ref="#/components/schemas/User"),
+	 *             @OA\Property(property="code", type="integer", example=200)
+	 *         )
+	 *     ),
+	 *     @OA\Response(
+	 *         response=401,
+	 *         description="Unauthenticated",
+	 *         @OA\JsonContent(
+	 *             @OA\Property(property="message", type="string", example="Unauthenticated")
+	 *         )
+	 *     )
+	 * )
+	 */
+	public function me(Request $request)
+	{
+		$user = $request->user();
+		
+		if (!$user) {
+			return response()->json([
+				'message' => 'Unauthenticated',
+				'code' => 401
+			], 401);
+		}
+
+		return response()->json([
+			'message' => 'Authenticated user retrieved successfully',
+			'user' => $user,
+			'code' => 200
+		], 200);
 	}
 }

@@ -1,7 +1,8 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\ReactNativeAuthController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -35,24 +36,13 @@ use Illuminate\Support\Facades\Route;
  *     )
  * )
  */
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-Route::middleware('auth:sanctum')->get('/me', function (Request $request) {
-    return response()->json([
-        'message' => 'Authenticated user retrieved successfully',
-        'user' => $request->user(),
-        'code' => 200,
-    ], 200);
-});
-// Route::post('/login', [ReactNativeAuthController::class, 'login' ]);
-Route::get('/countries', [ReactNativeAuthController::class, 'countries']);
-// Route::get('/schools', [ReactNativeAuthController::class, 'schools']);
-// Route::get('/currencies', [ReactNativeAuthController::class, 'currencies']);
-// Route::get('/movies', [ReactNativeAuthController::class, 'movies']);
+Route::get('/me', [AuthController::class, 'me']);
+Route::middleware('auth:sanctum')->get('/me', [AuthController::class, 'me']);
 Route::post('/signup', [AuthController::class, 'signup']);
 Route::post('/signin', [AuthController::class, 'signin']);
 Route::get('/user/{id}', [AuthController::class, 'show']);
+Route::apiResource('/product', ProductController::class,);
+Route::post('admin', [AdminController::class, 'login']);
 
 
 // Example API routes - you can add your own routes here
