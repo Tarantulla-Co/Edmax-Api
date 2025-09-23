@@ -32,7 +32,7 @@ class ProductController extends Controller
             'image'       => $imagePath,
         ]);
 
-        return response()->json($product, 201);
+        return response()->json([$product, 'message' => 'Product Created Successfully'],201);
     }
 
     public function show(Product $product)
@@ -40,11 +40,44 @@ class ProductController extends Controller
         return response()->json($product);
     }
 
-    public function update(Request $request, Product $product)
-    {
-        $product->update($request->all());
-        return response()->json($product);
+   public function update(Request $request, Product $product)
+{
+    $validated = $request->validate([
+        'name'        => 'sometimes|required|string',
+        'price'       => 'sometimes|required|numeric',
+        'description' => 'nullable|string',
+        'image'       => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+    ]);
+
+    // Update basic fields
+    $product->fill([
+        'name'        => $validated['name']        ?? $product->name,
+        'price'       => $validated['price']       ?? $product->price,
+        'description' => $validated['description'] ?? $product->description,
+    ]);
+
+    
+    // If a new image is uploaded, store and replace
+    if ($request->hasFile('image')) {
+        // optionally delete old file
+        if ($product->image) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($product->image);
+        }
+
+        $path = $request->file('image')->store('products', 'public');
+        $product->image = $path;
+       
     }
+
+    $product->save();
+
+     return response()->json([
+        $product,
+            'mesage ' => 'Product Updated Successfully',
+            'code' => 201,
+        ],201);
+
+}
 
     public function destroy(Product $product)
     {

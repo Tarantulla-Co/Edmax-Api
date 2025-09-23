@@ -3,6 +3,8 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\PaystackController;
+use App\Http\Controllers\CartController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -43,6 +45,14 @@ Route::post('/signin', [AuthController::class, 'signin']);
 Route::get('/user/{id}', [AuthController::class, 'show']);
 Route::apiResource('/product', ProductController::class,);
 Route::post('admin', [AdminController::class, 'login']);
+// Route::post('/paystack/init', [PaystackController::class, 'initialize']);
+Route::get('/paystack/verify/{reference}', [PaystackController::class, 'verify']);
+
+Route::get('/cart', [CartController::class, 'index']);
+Route::post('/cart', [CartController::class, 'store']);
+Route::delete('/cart/{cart}', [CartController::class, 'destroy']);
+
+
 
 
 // Example API routes - you can add your own routes here
